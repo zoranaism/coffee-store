@@ -20,7 +20,7 @@ export class CartState {
     this.cartSignal.set(cart);
   }
 
-  clear(): void {
+clear(): void {
     this.cartSignal.set(null);
   }
 }

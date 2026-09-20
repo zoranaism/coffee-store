@@ -1,107 +1,185 @@
 <div class="p-8">
-  <h1 class="mb-8 text-3xl font-bold">Your Cart</h1>
+  <div class="mx-auto max-w-4xl">
+    <h1 class="text-3xl font-bold">Your Cart</h1>
 
-  @if (errorMessage) {
-    <div class="mb-6 rounded-lg bg-red-50 p-4 text-red-700">
-      <p>{{ errorMessage }}</p>
-
-      <button
-        type="button"
-        class="mt-3 rounded-lg border border-red-300 px-4 py-2"
-        (click)="retryLastAction()"
+    @if (errorMessage) {
+      <div
+        class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
+        role="alert"
       >
-        Try again
-      </button>
-    </div>
-  }
-
-  @if (cartState.cart(); as cart) {
-    <div class="space-y-6">
-      @for (item of cart.items; track item.id) {
-        <div class="rounded-xl border bg-white p-4 shadow-sm">
-          <div class="flex items-start justify-between">
-            <div>
-              <h2 class="text-xl font-semibold">
-                {{ item.drink.name }}
-              </h2>
-
-              @for (topping of item.toppings; track topping.id) {
-                <p class="text-gray-600">
-                  {{ topping.name }}
-                </p>
-              }
-
-              <div class="mt-4 flex items-center gap-3">
-                <button
-                  type="button"
-                  class="rounded border px-3 py-1"
-                  (click)="decreaseQuantity(item.id, item.quantity)"
-                >
-                  −
-                </button>
-
-                <span>
-                  Quantity: {{ item.quantity }}
-                </span>
-
-                <button
-                  type="button"
-                  class="rounded border px-3 py-1"
-                  (click)="increaseQuantity(item.id, item.quantity)"
-                >
-                  +
-                </button>
-              </div>
-
-              <button
-                type="button"
-                class="mt-3 text-sm text-red-600 hover:underline"
-                (click)="removeItem(item.id)"
-              >
-                Remove
-              </button>
-            </div>
-
-            <p class="font-semibold">
-              €{{ item.unitPrice * item.quantity }}
-            </p>
-          </div>
-        </div>
-      }
-
-      <div class="border-t pt-6">
-        <div class="flex justify-between">
-          <span>Subtotal</span>
-          <span>€{{ cart.subtotal }}</span>
-        </div>
-
-       @if (cart.promotion) {
-        <div class="mt-2 rounded-lg bg-green-50 p-3 text-green-800">
-          {{ cart.promotion }}
-        </div>
-      }
-
-      <div class="mt-2 flex justify-between">
-        <span>Discount</span>
-        <span>€{{ cart.discount }}</span>
-      </div>
-
-        <div class="mt-4 flex justify-between text-xl font-bold">
-          <span>Total</span>
-          <span>€{{ cart.total }}</span>
-        </div>
+        <p>{{ errorMessage }}</p>
 
         <button
           type="button"
-          class="mt-6 rounded-lg bg-black px-5 py-3 text-white"
+          class="mt-3 rounded-lg border border-red-300 bg-white px-4 py-2 font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          (click)="retryLastAction()"
         >
-          Place order
+          Try again
         </button>
       </div>
-    </div>
-  } @else {
-    <p class="text-gray-600">
-      Your cart is empty.
-    </p>
-  }
+    }
+
+    @if (cartState.cart(); as cart) {
+      @if (cart.items.length > 0) {
+        <div class="mt-8 space-y-6">
+          @for (item of cart.items; track item.id) {
+            <article class="rounded-xl border bg-white p-5 shadow-sm">
+              <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 class="text-xl font-semibold">
+                    {{ item.drink.name }}
+                  </h2>
+
+                  @if (item.toppings.length > 0) {
+                    <div class="mt-2">
+                      <p class="text-sm font-medium text-gray-700">
+                        Toppings
+                      </p>
+
+                      <ul class="mt-1 space-y-1 text-gray-600">
+                        @for (topping of item.toppings; track topping.id) {
+                          <li>{{ topping.name }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+
+                  <div
+                    class="mt-5 flex items-center gap-3"
+                    aria-label="Quantity"
+                  >
+                    <button
+                      type="button"
+                      class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                      [attr.aria-label]="'Decrease quantity of ' + item.drink.name"
+                      [disabled]="item.quantity <= 1"
+                      [class.cursor-not-allowed]="item.quantity <= 1"
+                      [class.opacity-40]="item.quantity <= 1"
+                      (click)="decreaseQuantity(item.id, item.quantity)"
+                    >
+                      −
+                    </button>
+
+                    <span
+                      class="min-w-8 text-center font-medium"
+                      aria-live="polite"
+                    >
+                      {{ item.quantity }}
+                    </span>
+
+                    <button
+                      type="button"
+                      class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                      [attr.aria-label]="'Increase quantity of ' + item.drink.name"
+                      (click)="increaseQuantity(item.id, item.quantity)"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="mt-4 text-sm font-medium text-red-600 hover:underline focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    (click)="removeItem(item.id)"
+                  >
+                    Remove item
+                  </button>
+                </div>
+
+                <p class="text-lg font-semibold">
+                  €{{ item.unitPrice * item.quantity }}
+                </p>
+              </div>
+            </article>
+          }
+
+          <section
+            class="rounded-xl border bg-white p-6 shadow-sm"
+            aria-labelledby="summary-heading"
+          >
+            <h2
+              id="summary-heading"
+              class="text-xl font-semibold"
+            >
+              Order summary
+            </h2>
+
+            <div class="mt-5 space-y-3">
+              <div class="flex justify-between text-gray-700">
+                <span>Subtotal</span>
+                <span>€{{ cart.subtotal }}</span>
+              </div>
+
+              @if (cart.promotion) {
+                <div
+                  class="rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
+                  role="status"
+                >
+                  <p class="font-medium">
+                    {{ cart.promotion }}
+                  </p>
+                </div>
+              }
+
+              @if (cart.discount > 0) {
+                <div class="flex justify-between text-green-700">
+                  <span>Discount</span>
+                  <span>−€{{ cart.discount }}</span>
+                </div>
+              }
+
+              <div class="border-t pt-4">
+                <div class="flex justify-between text-xl font-bold">
+                  <span>Total</span>
+                  <span>€{{ cart.total }}</span>
+                </div>
+              </div>
+            </div>
+
+            <a
+              routerLink="/checkout"
+              class="mt-6 block w-full rounded-lg bg-black px-5 py-3 text-center font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+            >
+              Place order
+            </a>
+          </section>
+        </div>
+      } @else {
+        <div class="mt-8 rounded-xl border bg-white p-8 text-center shadow-sm">
+          <h2 class="text-xl font-semibold">
+            Your cart is empty
+          </h2>
+
+          <p class="mt-2 text-gray-600">
+            Ready for a coffee?
+          </p>
+
+          <a
+            routerLink="/shop"
+            class="mt-6 inline-block rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+          >
+            Browse drinks
+          </a>
+        </div>
+      }
+    } @else {
+      <div class="mt-8 rounded-xl border bg-white p-8 text-center shadow-sm">
+        <h2 class="text-xl font-semibold">
+          Your cart is empty
+        </h2>
+
+        <p class="mt-2 text-gray-600">
+          Ready for a coffee?
+        </p>
+
+        <a
+          routerLink="/shop"
+          class="mt-6 inline-block rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+        >
+          Browse drinks
+        </a>
+      </div>
+    }
+
+  </div>
 </div>

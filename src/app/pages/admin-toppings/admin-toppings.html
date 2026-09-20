@@ -1,94 +1,156 @@
 <div class="p-8">
-  <div class="mb-8 flex items-center justify-between">
-    <h1 class="text-3xl font-bold">Manage Toppings</h1>
+  <div class="mx-auto max-w-4xl">
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">
+          Manage Toppings
+        </h1>
 
-    <button
-      type="button"
-      class="rounded-lg bg-black px-4 py-2 text-white"
-      (click)="addTopping()"
-    >
-      Add topping
-    </button>
-  </div>
+        <p class="mt-1 text-gray-600">
+          Add, edit, or remove toppings from the store.
+        </p>
+      </div>
 
-  @if (successMessage) {
-    <p class="mb-4 rounded-lg bg-green-50 p-3 text-green-700">
-      {{ successMessage }}
-    </p>
-  }
+      <button
+        type="button"
+        class="rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+        (click)="addTopping()"
+      >
+        Add topping
+      </button>
+    </div>
 
-  @if (errorMessage) {
-    <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-700">
+    @if (successMessage) {
+      <div
+        class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 text-green-700"
+        role="status"
+        aria-live="polite"
+      >
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div
+        class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
+        role="alert"
+      >
         <p>{{ errorMessage }}</p>
 
         <button
-        type="button"
-        class="mt-3 rounded-lg border border-red-300 px-4 py-2 text-red-700"
-        (click)="loadToppings()"
-        >
-        Try again
-        </button>
-    </div>
-    }
-
-  @if (loading) {
-    <p class="text-gray-600">Loading toppings...</p>
-  } @else {
-    <div class="space-y-3">
-      @for (topping of toppings; track topping.id) {
-        <div
-          class="flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm"
-        >
-          <div>
-            <h2 class="font-semibold">{{ topping.name }}</h2>
-            <p class="text-gray-600">€{{ topping.price }}</p>
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              type="button"
-              class="rounded-lg border px-4 py-2"
-              (click)="editTopping(topping.id)"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              class="rounded-lg border border-red-300 px-4 py-2 text-red-600"
-              (click)="confirmDelete(topping.id, topping.name)"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      }
-    </div>
-  }
-
-  @if (toppingToDelete) {
-    <div class="mt-8 rounded-xl border border-red-200 bg-red-50 p-6">
-      <h2 class="text-lg font-semibold">
-        Are you sure you want to delete {{ toppingToDelete.name }}?
-      </h2>
-
-      <div class="mt-4 flex gap-3">
-        <button
           type="button"
-          class="rounded-lg border px-4 py-2"
-          (click)="cancelDelete()"
+          class="mt-3 rounded-lg border border-red-300 bg-white px-4 py-2 font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          (click)="loadToppings()"
         >
-          Cancel
-        </button>
-
-        <button
-          type="button"
-          class="rounded-lg bg-red-600 px-4 py-2 text-white"
-          (click)="deleteTopping()"
-        >
-          Delete
+          Try again
         </button>
       </div>
-    </div>
-  }
+    }
+
+    @if (loading) {
+      <div
+        class="rounded-xl border bg-white p-8 text-center shadow-sm"
+        role="status"
+        aria-live="polite"
+      >
+        <p class="text-gray-600">
+          Loading toppings…
+        </p>
+      </div>
+    } @else if (toppings.length === 0) {
+      <div class="rounded-xl border bg-white p-8 text-center shadow-sm">
+        <h2 class="text-xl font-semibold">
+          No toppings yet
+        </h2>
+
+        <p class="mt-2 text-gray-600">
+          Add your first topping to give customers more ways to customize their drinks.
+        </p>
+
+        <button
+          type="button"
+          class="mt-6 rounded-lg bg-black px-5 py-3 font-medium text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+          (click)="addTopping()"
+        >
+          Add your first topping
+        </button>
+      </div>
+    } @else {
+      <div
+        class="space-y-3"
+        aria-label="Toppings"
+      >
+        @for (topping of toppings; track topping.id) {
+          <article
+            class="flex flex-col gap-4 rounded-xl border bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <h2 class="font-semibold">
+                {{ topping.name }}
+              </h2>
+
+              <p class="mt-1 text-gray-600">
+                €{{ topping.price }}
+              </p>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                type="button"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                (click)="editTopping(topping.id)"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                class="rounded-lg border border-red-300 bg-white px-4 py-2 font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                [attr.aria-label]="'Delete ' + topping.name"
+                (click)="confirmDelete(topping.id, topping.name)"
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    @if (toppingToDelete) {
+      <section
+        class="mt-8 rounded-xl border border-red-200 bg-red-50 p-6"
+        aria-labelledby="delete-confirmation-heading"
+      >
+        <h2
+          id="delete-confirmation-heading"
+          class="text-lg font-semibold text-red-900"
+        >
+          Delete {{ toppingToDelete.name }}?
+        </h2>
+
+        <p class="mt-2 text-sm text-red-800">
+          This action cannot be undone.
+        </p>
+
+        <div class="mt-5 flex flex-wrap gap-3">
+          <button
+            type="button"
+            class="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            (click)="cancelDelete()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
+            (click)="deleteTopping()"
+          >
+            Delete topping
+          </button>
+        </div>
+      </section>
+    }
+  </div>
 </div>

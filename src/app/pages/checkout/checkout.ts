@@ -19,21 +19,24 @@ export class Checkout {
   orderId = '';
   orderTotal = 0;
   errorMessage = '';
+  isPlacingOrder = false;
 
   placeOrder(): void {
     const cart = this.cartState.cart();
 
-    if (!cart) {
+    if (!cart || this.isPlacingOrder) {
       return;
     }
 
     this.errorMessage = '';
+    this.isPlacingOrder = true;
 
     this.coffeeStore.createOrder(cart.id).subscribe({
       next: (order) => {
         this.orderPlaced = true;
         this.orderId = order.id;
         this.orderTotal = order.total;
+        this.isPlacingOrder = false;
 
         this.cartState.clear();
       },
@@ -41,6 +44,8 @@ export class Checkout {
       error: () => {
         this.errorMessage =
           "We couldn't place your order. Your cart has not been cleared. Please try again.";
+
+        this.isPlacingOrder = false;
       },
     });
   }

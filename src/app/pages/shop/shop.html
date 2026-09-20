@@ -1,58 +1,155 @@
-@for (drink of drinks | async; track drink.id) {
-  <div class="rounded-xl border bg-white p-4 shadow-sm">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-semibold">{{ drink.name }}</h2>
-        <p class="mt-2 text-gray-600">€{{ drink.price }}</p>
-      </div>
+<div class="p-8">
+  <div class="mx-auto max-w-4xl">
+    <h1 class="text-3xl font-bold">Build your coffee</h1>
 
-      <button
-        type="button"
-        class="rounded-lg bg-black px-4 py-2 text-white"
-        (click)="selectDrink(drink)"
-      >
-        Add
-      </button>
-    </div>
-  </div>
-}
-
-@if (selectedDrink) {
-  <section class="mt-8 rounded-xl border bg-white p-6">
-    <h2 class="text-2xl font-semibold">
-      {{ selectedDrink.name }}
-    </h2>
-
-    <p class="mt-1 text-gray-600">
-      €{{ selectedDrink.price }}
+    <p class="mt-2 text-gray-600">
+      Choose a drink and customize it with your favorite toppings.
     </p>
 
-    <h3 class="mt-6 mb-3 font-semibold">
-      Choose toppings:
-    </h3>
+    @if (successMessage) {
+      <div
+        class="mt-6 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800"
+        role="status"
+        aria-live="polite"
+      >
+        ✓ {{ successMessage }}
 
-    <div class="space-y-3">
-      @for (topping of toppings | async; track topping.id) {
-        <label class="flex items-center gap-3">
-         <input
-          type="checkbox"
-          [checked]="selectedToppings.includes(topping)"
-          (change)="toggleTopping(topping)"
-        />
+        <a
+          routerLink="/cart"
+          class="ml-2 font-semibold underline"
+        >
+          View cart
+        </a>
+      </div>
+    }
 
-          <span>
-            {{ topping.name }} €{{ topping.price }}
-          </span>
-        </label>
-      }
-    </div>
+    @if (errorMessage) {
+      <div
+        class="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800"
+        role="alert"
+      >
+        {{ errorMessage }}
+      </div>
+    }
 
-    <button
-      type="button"
-      class="mt-6 rounded-lg bg-black px-4 py-2 text-white"
-      (click)="addToCart()"
-    >
-      Add to cart
-    </button>
-  </section>
-}
+    <fieldset class="mt-8">
+      <legend class="text-xl font-semibold">
+        1. Choose your drink
+      </legend>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        @if (drinks | async; as drinkList) {
+          @if (drinkList.length > 0) {
+            @for (drink of drinkList; track drink.id) {
+              <label
+                class="cursor-pointer rounded-xl border bg-white p-4 shadow-sm transition hover:border-gray-500 focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
+                [class.border-2]="selectedDrink?.id === drink.id"
+                [class.border-black]="selectedDrink?.id === drink.id"
+              >
+                <div class="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="drink"
+                    [value]="drink.id"
+                    [checked]="selectedDrink?.id === drink.id"
+                    (change)="selectDrink(drink)"
+                    class="h-5 w-5 accent-black"
+                  />
+
+                  <div>
+                    <h2 class="text-lg font-semibold">
+                      {{ drink.name }}
+                    </h2>
+
+                    <p class="mt-1 text-gray-600">
+                      €{{ drink.price }}
+                    </p>
+                  </div>
+                </div>
+              </label>
+            }
+          } @else {
+            <p class="rounded-lg border bg-gray-50 p-4 text-gray-600">
+              No drinks are available right now.
+            </p>
+          }
+        } @else {
+          <p
+            class="rounded-lg border bg-gray-50 p-4 text-gray-600"
+            aria-live="polite"
+          >
+            Loading drinks...
+          </p>
+        }
+      </div>
+    </fieldset>
+
+    @if (selectedDrink) {
+      <section
+        class="mt-8 rounded-xl border bg-white p-6 shadow-sm"
+        aria-labelledby="toppings-heading"
+      >
+        <h2 class="text-2xl font-semibold">
+          {{ selectedDrink.name }}
+        </h2>
+
+        <p class="mt-1 text-gray-600">
+          €{{ selectedDrink.price }}
+        </p>
+
+        <fieldset class="mt-6">
+          <legend
+            id="toppings-heading"
+            class="mb-3 font-semibold"
+          >
+            2. Choose toppings
+          </legend>
+
+          <div class="space-y-3">
+            @if (toppings | async; as toppingList) {
+              @if (toppingList.length > 0) {
+                @for (topping of toppingList; track topping.id) {
+                  <label
+                    class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-gray-50 focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="selectedToppings.includes(topping)"
+                      (change)="toggleTopping(topping)"
+                      class="h-5 w-5 accent-black"
+                    />
+
+                    <span>
+                      {{ topping.name }}
+                      <span class="text-gray-600">
+                        +€{{ topping.price }}
+                      </span>
+                    </span>
+                  </label>
+                }
+              } @else {
+                <p class="rounded-lg border bg-gray-50 p-4 text-gray-600">
+                  No toppings are available right now.
+                </p>
+              }
+            } @else {
+              <p
+                class="rounded-lg border bg-gray-50 p-4 text-gray-600"
+                aria-live="polite"
+              >
+                Loading toppings...
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        <div class="mt-6">
+          <app-button (clicked)="addToCart()">
+            Add to cart
+          </app-button>
+        </div>
+      </section>
+    }
+
+  </div>
+</div>
