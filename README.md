@@ -973,16 +973,20 @@ The implementation intentionally prioritises **clarity over unnecessary complexi
 
 For a small Angular application, the focus was on:
 
-* Clear component boundaries.
-* A dedicated API service.
-* Lightweight shared state using Signals.
-* Reusable UI primitives.
-* Accessible forms and interactions.
-* Clear loading, empty, success and error states.
-* Responsive layouts.
-* Safe destructive actions.
-* Predictable navigation.
-* Maintainable routing.
-* Keeping the frontend independent from the mock backend implementation.
+Clear component boundaries.
+A dedicated API service.
+Lightweight shared state using Signals.
+Reusable UI primitives.
+Accessible forms and interactions.
+Clear loading, empty, success and error states.
+Responsive layouts.
+Safe destructive actions.
+Predictable navigation.
+Maintainable routing.
+Keeping the frontend independent from the mock backend implementation.
+Using Signals consistently for component state, particularly with zoneless change detection.
+Treating the backend as the source of truth by loading the cart from the API.
+Keeping the cart synchronised with the backend after a successful order.
+Protecting important business logic, such as calculateCartTotals, with focused automated tests.
 
 The result is intended to demonstrate not only that the required functionality works, but also how the application could be developed and maintained as a real frontend product.
